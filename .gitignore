@@ -10,8 +10,7 @@ __pycache__/
 venv/
 env/
 
-# Raw project materials and source datasets
-data_raw/
+# Raw project materials
 docs/*.pdf
 docs/*.docx
 
