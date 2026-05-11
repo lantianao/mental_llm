@@ -1,0 +1,31 @@
+# Python/cache artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Local environments
+.venv/
+venv/
+env/
+
+# Raw project materials and source datasets
+data_raw/
+docs/*.pdf
+docs/*.docx
+
+# Model checkpoints and downloaded weights
+model/
+models/
+*.safetensors
+*.bin
+*.pt
+*.pth
+
+# Generated logs and experiment outputs
+runs/
+wandb/
+logs/
+
+# Keep lightweight processed DPO data under data/dpo tracked.

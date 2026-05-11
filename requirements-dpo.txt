@@ -1,0 +1,11 @@
+# Data preparation
+
+# The pair builder uses only the Python standard library.
+
+# DPO training
+datasets
+peft
+transformers
+trl
+accelerate
+bitsandbytes; platform_system != "Windows"
