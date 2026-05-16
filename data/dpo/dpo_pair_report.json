@@ -1,39 +1,61 @@
-﻿{
-    "min_score_diff":  1,
-    "num_grouped_question_responses":  400,
-    "num_questions":  100,
-    "num_questions_with_pairs":  95,
-    "question_split_counts":  {
-                                  "train":  80,
-                                  "dev":  10,
-                                  "test":  10
-                              },
-    "num_pairs":  346,
-    "pair_split_counts":  {
-                              "train":  284,
-                              "dev":  23,
-                              "test":  39
-                          },
-    "pair_question_split_counts":  {
-                                       "train":  79,
-                                       "dev":  7,
-                                       "test":  9
-                                   },
-    "chosen_responder_counts":  {
-                                    "gemini":  70,
-                                    "gpt4":  77,
-                                    "human":  18,
-                                    "llama3":  181
-                                },
-    "rejected_responder_counts":  {
-                                      "gemini":  92,
-                                      "gpt4":  81,
-                                      "human":  172,
-                                      "llama3":  1
-                                  },
-    "score_diff":  {
-                       "min":  1,
-                       "max":  4,
-                       "mean":  1.7763005780346806
-                   }
+{
+  "min_score_diff": 1.0,
+  "num_grouped_question_responses": 400,
+  "num_questions": 100,
+  "question_split_counts": {
+    "dev": 10,
+    "test": 20,
+    "train": 70
+  },
+  "num_pairs": 346,
+  "pair_split_counts": {
+    "dev": 35,
+    "test": 73,
+    "train": 238
+  },
+  "pair_question_split_counts": {
+    "dev": 10,
+    "test": 19,
+    "train": 66
+  },
+  "chosen_responder_counts": {
+    "gemini": 70,
+    "gpt4": 77,
+    "human": 18,
+    "llama3": 181
+  },
+  "rejected_responder_counts": {
+    "gemini": 92,
+    "gpt4": 81,
+    "human": 172,
+    "llama3": 1
+  },
+  "topic_pair_counts": {
+    "anger-management": 19,
+    "anxiety": 18,
+    "behavioral-change": 21,
+    "counseling-fundamentals": 18,
+    "depression": 18,
+    "domestic-violence": 15,
+    "eating-disorders": 18,
+    "family-conflict": 16,
+    "grief-and-loss": 14,
+    "legal-regulatory": 16,
+    "marriage": 13,
+    "parenting": 18,
+    "professional-ethics": 14,
+    "relationship-dissolution": 18,
+    "relationships": 23,
+    "self-esteem": 20,
+    "social-relationships": 22,
+    "substance-abuse": 18,
+    "trauma": 11,
+    "workplace-relationships": 16
+  },
+  "score_diff": {
+    "min": 1.0,
+    "max": 4.0,
+    "mean": 1.776300578034682
+  },
+  "response_mismatch_groups": 0
 }

@@ -9,3 +9,4 @@ transformers
 trl
 accelerate
 bitsandbytes; platform_system != "Windows"
+tensorboard

@@ -41,6 +41,27 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lora-dropout", type=float, default=0.05)
     parser.add_argument("--bf16", action="store_true")
     parser.add_argument("--load-in-4bit", action="store_true")
+    parser.add_argument(
+        "--save-total-limit",
+        type=int,
+        default=None,
+        help="Limit the total amount of checkpoints. Use with save strategy.",
+    )
+    parser.add_argument(
+        "--save-only-model",
+        action="store_true",
+        help="Save only model weights (no optimizer/scheduler states).",
+    )
+    parser.add_argument(
+        "--report-to",
+        default="tensorboard",
+        help="Logging backend (e.g., tensorboard, wandb, none).",
+    )
+    parser.add_argument(
+        "--logging-dir",
+        default=None,
+        help="Directory for training logs (defaults to <output-dir>/logs).",
+    )
     return parser.parse_args()
 
 
@@ -71,12 +92,24 @@ def main() -> None:
 
     model_kwargs = {}
     if args.load_in_4bit:
-        model_kwargs.update(
-            {
-                "load_in_4bit": True,
-                "device_map": "auto",
-            }
-        )
+        # Newer Transformers expects a BitsAndBytesConfig instead of load_in_4bit.
+        try:
+            from transformers import BitsAndBytesConfig
+
+            model_kwargs.update(
+                {
+                    "quantization_config": BitsAndBytesConfig(load_in_4bit=True),
+                    "device_map": "auto",
+                }
+            )
+        except Exception:
+            # Fallback for older Transformers that still accept load_in_4bit.
+            model_kwargs.update(
+                {
+                    "load_in_4bit": True,
+                    "device_map": "auto",
+                }
+            )
 
     model = AutoModelForCausalLM.from_pretrained(
         args.model_name,
@@ -102,6 +135,10 @@ def main() -> None:
         ],
     )
 
+    logging_dir = args.logging_dir
+    if not logging_dir:
+        logging_dir = str(Path(args.output_dir) / "logs")
+
     config_kwargs = {
         "output_dir": args.output_dir,
         "beta": args.beta,
@@ -113,18 +150,30 @@ def main() -> None:
         "max_length": args.max_length,
         "max_prompt_length": args.max_prompt_length,
         "logging_steps": 10,
+        "logging_dir": logging_dir,
         "save_strategy": "epoch",
+        "save_total_limit": args.save_total_limit,
+        "save_only_model": args.save_only_model,
         "eval_strategy": "epoch",
-        "report_to": "none",
+        "report_to": args.report_to,
         "bf16": args.bf16,
         "remove_unused_columns": False,
     }
-    try:
-        training_args = DPOConfig(**config_kwargs)
-    except TypeError:
+    import inspect
+
+    config_local = dict(config_kwargs)
+    dpo_sig = inspect.signature(DPOConfig.__init__)
+    valid_keys = set(dpo_sig.parameters.keys()) - {"self"}
+    if "eval_strategy" in config_local and "eval_strategy" not in valid_keys:
         # Older Transformers releases used `evaluation_strategy`.
-        config_kwargs["evaluation_strategy"] = config_kwargs.pop("eval_strategy")
-        training_args = DPOConfig(**config_kwargs)
+        if "evaluation_strategy" in valid_keys:
+            config_local["evaluation_strategy"] = config_local.pop("eval_strategy")
+    # Drop any unsupported keys (e.g., max_prompt_length in some TRL versions).
+    for key in list(config_local.keys()):
+        if key not in valid_keys:
+            config_local.pop(key)
+
+    training_args = DPOConfig(**config_local)
 
     trainer_kwargs = {
         "model": model,
